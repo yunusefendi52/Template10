@@ -210,7 +210,7 @@
                         RightTapped="NavButton_RightTapped"
                         TabIndex="2"
                         Tapped="NavButton_Tapped"
-                        ToolTipService.ToolTip="{x:Bind Path=(ToolTipService.ToolTip), Mode=OneWay}"
+                        ToolTipService.ToolTip="{Binding Path=(ToolTipService.ToolTip), Mode=OneWay}"
                         Visibility="{x:Bind Visibility, Mode=OneWay}">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
