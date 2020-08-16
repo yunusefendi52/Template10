@@ -80,7 +80,7 @@ namespace Template10.Controls
             set { SetValue(GroupNameProperty, value); }
         }
         public static readonly DependencyProperty GroupNameProperty =
-          DependencyProperty.Register(nameof(CommandParameter), typeof(object),
+          DependencyProperty.Register(nameof(GroupName), typeof(object),
           typeof(HamburgerButtonInfo), new PropertyMetadata(null));
 
         /// <summary>

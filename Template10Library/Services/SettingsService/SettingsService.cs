@@ -45,7 +45,9 @@ namespace Template10.Services.SettingsService
             {
                 try
                 {
+#if NETFX_CORE
                     targetContainer = rootContainer.CreateContainer(folderName, createFolderIfNotExists ? ApplicationDataCreateDisposition.Always : ApplicationDataCreateDisposition.Existing);
+#endif
                 }
                 catch (Exception)
                 {
@@ -69,10 +71,12 @@ namespace Template10.Services.SettingsService
 
         public ISettingsService Open(string folderName, bool createFolderIfNotExists = true)
         {
-            ApplicationDataContainer targetContainer;
+            ApplicationDataContainer targetContainer = null;
             try
             {
+#if NETFX_CORE
                 targetContainer = Container.CreateContainer(folderName, createFolderIfNotExists ? ApplicationDataCreateDisposition.Always : ApplicationDataCreateDisposition.Existing);
+#endif
             }
             catch (Exception)
             {

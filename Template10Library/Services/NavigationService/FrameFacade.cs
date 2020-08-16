@@ -28,6 +28,8 @@ namespace Template10.Services.NavigationService
             frame.Navigated += (s, e) => FacadeNavigatedEventHandler(s, e);
             frame.Navigating += (s, e) => FacadeNavigatingCancelEventHandler(s, e);
 
+            // TODO UNO (yunus):
+#if NETFX_CORE
             // setup animations
             var t = new NavigationThemeTransition
             {
@@ -35,6 +37,7 @@ namespace Template10.Services.NavigationService
             };
             Frame.ContentTransitions = new TransitionCollection { };
             Frame.ContentTransitions.Add(t);
+#endif
         }
 
         public event EventHandler<HandledEventArgs> BackRequested;
@@ -59,50 +62,54 @@ namespace Template10.Services.NavigationService
             }
         }
 
-        #region state
+#region state
 
         private string GetFrameStateKey() => string.Format("{0}-PageState", FrameId);
 
         private ISettingsService FrameStateSettingsService()
         {
+#if NETFX_CORE
             return SettingsService.SettingsService.Create(SettingsStrategies.Local, GetFrameStateKey(), true);
+#else
+            return null;
+#endif
         }
 
         public void SetFrameState(string key, string value)
         {
-            FrameStateSettingsService().Write(key, value);
+            FrameStateSettingsService()?.Write(key, value);
         }
 
         public string GetFrameState(string key, string otherwise)
         {
-            return FrameStateSettingsService().Read(key, otherwise);
+            return FrameStateSettingsService()?.Read(key, otherwise);
         }
 
         public void ClearFrameState()
         {
-            FrameStateSettingsService().Clear();
+            FrameStateSettingsService()?.Clear();
         }
 
         private string GetPageStateKey(string frameId, Type type, int backStackDepth) => $"{frameId}-{type}-{backStackDepth}";
 
         public ISettingsService PageStateSettingsService(Type type)
         {
-            return FrameStateSettingsService().Open(GetPageStateKey(FrameId, type, BackStackDepth), true);
+            return FrameStateSettingsService()?.Open(GetPageStateKey(FrameId, type, BackStackDepth), true);
         }
 
         public ISettingsService PageStateSettingsService(string key)
         {
-            return FrameStateSettingsService().Open(key, true);
+            return FrameStateSettingsService()?.Open(key, true);
         }
 
         public void ClearPageState(Type type)
         {
-            this.FrameStateSettingsService().Remove(GetPageStateKey(FrameId, type, BackStackDepth));
+            this.FrameStateSettingsService()?.Remove(GetPageStateKey(FrameId, type, BackStackDepth));
         }
 
-        #endregion
+#endregion
 
-        #region frame facade
+#region frame facade
 
         public Frame Frame { get; }
 
@@ -172,7 +179,9 @@ namespace Template10.Services.NavigationService
             {
                 object context = (Frame as FrameworkElement).DataContext;
 
+#if NETFX_CORE
                 Windows.ApplicationModel.Resources.Core.ResourceContext.GetForCurrentView().Reset();
+#endif
                 // this only works for apps using serializable types
                 var state = Frame.GetNavigationState();
                 Frame.SetNavigationState(state);
@@ -208,7 +217,9 @@ namespace Template10.Services.NavigationService
             try
             {
                 object context = (Frame as FrameworkElement).DataContext;
+#if NETFX_CORE
                 Windows.ApplicationModel.Resources.Core.ResourceContext.GetForCurrentView().Reset();
+#endif
                 // navigates to the current page with new parameters.
                 Frame.Navigate(CurrentPageType, param, new SuppressNavigationTransitionInfo());
                 (Frame as FrameworkElement).DataContext = context;
@@ -254,7 +265,7 @@ namespace Template10.Services.NavigationService
 
         public void ClearValue(DependencyProperty dp) { Frame.ClearValue(dp); }
 
-        #endregion
+#endregion
 
         readonly List<EventHandler<NavigatedEventArgs>> _navigatedEventHandlers = new List<EventHandler<NavigatedEventArgs>>();
         public event EventHandler<NavigatedEventArgs> Navigated

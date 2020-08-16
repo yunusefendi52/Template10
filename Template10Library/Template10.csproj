@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="MSBuild.Sdk.Extras/2.0.54">
   <PropertyGroup>
-    <TargetFrameworks>xamarinmac20;MonoAndroid90;monoandroid10.0;uap10.0.16299</TargetFrameworks>
-    <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
+    <TargetFrameworks>uap10.0.16299;xamarinmac20;MonoAndroid90;netstandard2.0</TargetFrameworks>
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
     <AssemblyName>Template10Library</AssemblyName>
   </PropertyGroup>
@@ -10,8 +9,8 @@
     <IS_UNO>true</IS_UNO>
     <DefineConstants>$(DefineConstants);__WASM__;IS_UNO</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TimeoutAction)'=='xamarinios10' or '$(TargetFramework)'=='MonoAndroid90' or '$(TargetFramework)'=='monoandroid10.0' or '$(TargetFramework)'=='netstandard2.0'or '$(TargetFramework)'=='xamarinmac20'">
-    <PackageReference Include="Uno.UI" Version="3.0.0-dev.1504" />
+  <ItemGroup Condition="'$(TimeoutAction)'=='xamarinios10' or '$(TargetFramework)'=='MonoAndroid90' or '$(TargetFramework)'=='netstandard2.0' or '$(TargetFramework)'=='monoandroid10.0' or '$(TargetFramework)'=='netstandard2.0'or '$(TargetFramework)'=='xamarinmac20'">
+    <PackageReference Include="Uno.UI" Version="3.0.5" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="**\*.xaml" Exclude="bin\**\*.xaml;obj\**\*.xaml" />
@@ -23,22 +22,18 @@
     <UpToDateCheckInput Include="**\*.xaml" Exclude="bin\**\*.xaml;obj\**\*.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Backup\Template10 %28Library%29.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.10" Condition="'$(TargetFramework)'=='uap10.0.16299'" />
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.10" Condition="'$(TargetFramework)'=='uap10.0.16299' or '$(TargetFramework)'=='uap10.0.18362'" />
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
     </PackageReference>
     <PackageReference Include="Uno.Microsoft.Xaml.Behaviors.Uwp.Managed">
-      <Version>2.0.1-uno.28</Version>
+      <Version>2.0.2-uno.74</Version>
     </PackageReference>
-    <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>uno.Template10</PackageId>
-    <Version>1.1.12-preview-uno-160922</Version>
+    <Version>1.2.7-preview-uno</Version>
     <Authors>jerrynixon,darenmay</Authors>
     <Description>
       A rich library of helpers, services, and base classes for new and

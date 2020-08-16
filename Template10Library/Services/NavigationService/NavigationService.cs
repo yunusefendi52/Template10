@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Navigation;
 using Template10.Services.SerializationService;
 using Template10.Services.ViewService;
 using Template10.Utils;
+using Windows.Foundation.Collections;
 
 namespace Template10.Services.NavigationService
 {
@@ -147,7 +148,11 @@ namespace Template10.Services.NavigationService
             dataContext.Dispatcher = this.GetDispatcherWrapper();
             dataContext.SessionState = BootStrapper.Current.SessionState;
 
+#if NETFX_CORE
             var pageState = FrameFacadeInternal.PageStateSettingsService(page.GetType()).Values;
+#else
+            IPropertySet pageState = null;
+#endif
             await dataContext.OnNavigatedFromAsync(pageState, suspending).ConfigureAwait(false);
         }
 
@@ -158,14 +163,14 @@ namespace Template10.Services.NavigationService
             frameContent = frameContent ?? FrameFacadeInternal.Frame.Content;
 
             LastNavigationParameter = parameter;
-            LastNavigationType = frameContent.GetType().FullName;
+            LastNavigationType = frameContent?.GetType().FullName;
 
             var page = frameContent as Page;
             if (page != null)
             {
                 if (mode == NavigationMode.New)
                 {
-                    var pageState = FrameFacadeInternal.PageStateSettingsService(page.GetType()).Values;
+                    var pageState = FrameFacadeInternal.PageStateSettingsService(page.GetType())?.Values;
                     pageState?.Clear();
                 }
 
@@ -176,7 +181,7 @@ namespace Template10.Services.NavigationService
                     dataContext.NavigationService = this;
                     dataContext.Dispatcher = this.GetDispatcherWrapper();
                     dataContext.SessionState = BootStrapper.Current.SessionState;
-                    var pageState = FrameFacadeInternal.PageStateSettingsService(page.GetType()).Values;
+                    var pageState = FrameFacadeInternal.PageStateSettingsService(page.GetType())?.Values;
                     await dataContext.OnNavigatedToAsync(parameter, mode, pageState);
 
                     // update bindings after NavTo initializes data
@@ -282,14 +287,14 @@ namespace Template10.Services.NavigationService
                 return;
 
             var state = FrameFacadeInternal.PageStateSettingsService(GetType().ToString());
-            if (state == null)
-            {
-                throw new InvalidOperationException("State container is unexpectedly null");
-            }
+            //if (state == null)
+            //{
+            //    throw new InvalidOperationException("State container is unexpectedly null");
+            //}
 
-            state.Write<string>("CurrentPageType", CurrentPageType.AssemblyQualifiedName);
-            state.Write<object>("CurrentPageParam", CurrentPageParam);
-            state.Write<string>("NavigateState", FrameFacadeInternal?.NavigationService.NavigationState);
+            state?.Write<string>("CurrentPageType", CurrentPageType.AssemblyQualifiedName);
+            state?.Write<object>("CurrentPageParam", CurrentPageParam);
+            state?.Write<string>("NavigateState", FrameFacadeInternal?.NavigationService.NavigationState);
 
             await Task.CompletedTask;
         }

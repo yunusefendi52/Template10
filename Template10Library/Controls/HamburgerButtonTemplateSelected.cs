@@ -15,10 +15,14 @@ namespace Template10.Controls
             var info = item as HamburgerButtonInfo;
             switch (info.ButtonType)
             {
-                case HamburgerButtonInfo.ButtonTypes.Toggle: return ToggleTemplate;
-                case HamburgerButtonInfo.ButtonTypes.Command: return CommandTemplate;
-                case HamburgerButtonInfo.ButtonTypes.Literal: return LiteralTemplate;
-                default: return ToggleTemplate;
+                case HamburgerButtonInfo.ButtonTypes.Toggle:
+                    return ToggleTemplate;
+                case HamburgerButtonInfo.ButtonTypes.Command:
+                    return CommandTemplate;
+                case HamburgerButtonInfo.ButtonTypes.Literal:
+                    return LiteralTemplate;
+                default:
+                    return ToggleTemplate;
             }
         }
         public DataTemplate ToggleTemplate { get; set; }

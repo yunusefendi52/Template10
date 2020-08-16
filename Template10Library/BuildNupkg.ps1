@@ -1,0 +1,1 @@
+msbuild -t:clean,restore,clean,pack -p:configuration=Release

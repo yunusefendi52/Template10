@@ -72,6 +72,8 @@ namespace Template10.Common
         {
             DebugWrite();
 
+#if NETFX_CORE
+
             // Hook up keyboard and mouse Back handler
             var KeyboardService = Services.KeyboardService.KeyboardService.Instance;
             KeyboardService.AfterBackGesture = () =>
@@ -89,6 +91,8 @@ namespace Template10.Common
                 RaiseForwardRequested();
             };
 
+#endif
+
             // Hook up the default Back handler
             SystemNavigationManager.GetForCurrentView().BackRequested += BackHandler;
         }
@@ -96,18 +100,25 @@ namespace Template10.Common
         public event EventHandler<WindowCreatedEventArgs> WindowCreated;
         protected sealed override void OnWindowCreated(WindowCreatedEventArgs args)
         {
+            WindowCreated?.Invoke(this, args);
+
+            base.OnWindowCreated(args);
+        }
+
+        public virtual void InitializeWindowWrapper(Window window)
+        {
             DebugWrite();
             //should be called to initialize and set new SynchronizationContext
             if (!WindowWrapper.ActiveWrappers.Any())
                 Loaded();
             // handle window
-            var window = new WindowWrapper(args.Window);
+            var wrapper = new WindowWrapper(window);
+#if NETFX_CORE
             ViewService.OnWindowCreated();
-            WindowCreated?.Invoke(this, args);
-            base.OnWindowCreated(args);
+#endif
         }
 
-        #region properties
+#region properties
 
         public INavigationService NavigationService => WindowWrapper.Current().NavigationServices.FirstOrDefault();
 
@@ -135,9 +146,9 @@ namespace Template10.Common
 
         public bool ForceShowShellBackButton { get; set; } = false;
 
-        #endregion
+#endregion
 
-        #region activated
+#region activated
 
         // it is the intent of Template 10 to no longer require Launched/Activated overrides, only OnStartAsync()
 
@@ -183,9 +194,9 @@ namespace Template10.Common
             CallActivateWindow(WindowLogic.ActivateWindowSources.Activating);
         }
 
-        #endregion
+#endregion
 
-        #region launch
+#region launch
 
         // it is the intent of Template 10 to no longer require Launched/Activated overrides, only OnStartAsync()
 
@@ -292,7 +303,7 @@ namespace Template10.Common
             args.Handled = handled;
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Default Hardware/Shell Back handler overrides standard Back behavior 
@@ -353,7 +364,7 @@ namespace Template10.Common
         // this event precedes the in-frame event by the same name
         public static event EventHandler<HandledEventArgs> ForwardRequested;
 
-        #region overrides
+#region overrides
 
         public enum StartKind { Launch, Activate }
 
@@ -432,9 +443,9 @@ namespace Template10.Common
             DebugWrite($"Virtual, {nameof(previousExecutionState)}:{previousExecutionState}");
         }
 
-        #endregion
+#endregion
 
-        #region pipeline
+#region pipeline
 
         /// <summary>
         /// Creates a new Frame and adds the resulting NavigationService to the 
@@ -572,7 +583,7 @@ namespace Template10.Common
             }
         }
 
-        #endregion
+#endregion
 
         WindowLogic _WindowLogic = new WindowLogic();
         private void CallActivateWindow(WindowLogic.ActivateWindowSources source)
@@ -581,7 +592,7 @@ namespace Template10.Common
             CurrentState = States.Running;
         }
 
-        #region Workers
+#region Workers
 
         /// <summary>
         ///  By default, Template 10 will setup the root element to be a Template 10
@@ -606,12 +617,14 @@ namespace Template10.Common
             foreach (var resource in Application.Current.Resources)
             {
                 var key = resource.Key;
+#if NETFX_CORE
                 if (key == typeof(Controls.CustomTitleBar))
                 {
                     var style = resource.Value as Style;
                     var title = new Controls.CustomTitleBar();
                     title.Style = style;
                 }
+#endif
                 count--;
                 if (count == 0) break;
             }
@@ -675,9 +688,9 @@ namespace Template10.Common
             return new Frame();
         }
 
-        #endregion
+#endregion
 
-        #region lifecycle logic
+#region lifecycle logic
 
         [Obsolete("Use AutoRestoreAfterTerminated")]
         public bool EnableAutoRestoreAfterTerminated { get; set; } = true;
@@ -728,7 +741,7 @@ namespace Template10.Common
             }
         }
 
-        #endregion
+#endregion
 
         // The default frame is automatically wrapped in a modal dialog.
         // this is how you access it to set ModalContent or the IsModal property. 
@@ -798,7 +811,9 @@ namespace Template10.Common
                 var launchedEvent = e as ILaunchActivatedEventArgs;
                 if (DetermineStartCause(e) == AdditionalKinds.Primary || launchedEvent?.TileId == "")
                 {
+#if NETFX_CORE
                     restored = await nav.RestoreSavedNavigationAsync();
+#endif
                     DebugWrite($"{nameof(restored)}:{restored}", caller: nameof(nav.RestoreSavedNavigationAsync));
                 }
                 return restored;
@@ -810,6 +825,7 @@ namespace Template10.Common
 
                 if (autoExtendExecutionSession)
                 {
+#if NETFX_CORE
                     using (var session = new Windows.ApplicationModel.ExtendedExecution.ExtendedExecutionSession
                     {
                         Description = GetType().ToString(),
@@ -818,6 +834,7 @@ namespace Template10.Common
                     {
                         await SuspendAllFramesAsync();
                     }
+#endif
                 }
                 else
                 {

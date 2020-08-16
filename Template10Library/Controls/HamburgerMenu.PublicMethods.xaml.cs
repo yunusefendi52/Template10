@@ -114,7 +114,7 @@ namespace Template10.Controls
             }
 
             // ensure
-            //LoadedNavButtons.ForEach(x => x.RefreshVisualState());
+            LoadedNavButtons.ForEach(x => x.RefreshVisualState());
         }
 
         private void ClearExisting()

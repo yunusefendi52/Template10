@@ -195,4 +195,4 @@ Templates (Project)/Blank/null
 /packages/Microsoft.VSSDK.BuildTools.14.1.24720
 
 *.zip
-/.vs/Template10/DesignTimeBuild
+!.vs/
